@@ -1,0 +1,360 @@
+
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@400;500&display=swap');
+  *{box-sizing:border-box;margin:0;padding:0}
+  :root{
+    --cream:#F2EDE4;--forest:#2C4A2E;--sage:#7A9E7E;--sage-light:#C8D9C9;--sage-dark:#4A7A4E;
+    --text-dark:#1E3320;--text-mid:#4A6B4D;--text-light:#5A7A5D;
+  }
+  #quiz-root{background:var(--cream);font-family:'DM Sans',sans-serif;min-height:600px;padding:2.5rem 2rem 3rem;color:var(--text-dark)}
+  .mf-logo{margin-bottom:2rem}
+  .mf-logo-text{font-family:'Playfair Display',serif;font-size:18px;font-weight:700;color:var(--forest);letter-spacing:0.06em}
+  .mf-logo-text span{font-weight:400;letter-spacing:0.04em}
+  .progress-bar{height:3px;background:var(--sage-light);border-radius:2px;margin-bottom:2.5rem}
+  .progress-fill{height:100%;background:var(--forest);border-radius:2px;transition:width 0.4s ease}
+  .step-label{font-size:12px;color:var(--text-light);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:0.5rem;font-weight:500}
+  .question-title{font-family:'Playfair Display',serif;font-size:28px;font-weight:700;color:var(--forest);line-height:1.2;margin-bottom:0.6rem}
+  .question-sub{font-size:14px;color:var(--text-mid);margin-bottom:2rem;line-height:1.6}
+  .option-grid{display:grid;gap:10px;margin-bottom:2rem}
+  .option-btn{background:#fff;border:1.5px solid var(--sage-light);border-radius:12px;padding:14px 18px;text-align:left;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:15px;color:var(--text-dark);transition:all 0.18s;display:flex;align-items:center;gap:12px}
+  .option-btn:hover{border-color:var(--sage);background:#f7faf7}
+  .option-btn.selected{border-color:var(--forest);background:#EAF0EA;color:var(--forest);font-weight:500}
+  .option-icon{width:20px;height:20px;border-radius:50%;border:1.5px solid var(--sage-light);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:11px;color:var(--forest);transition:all 0.18s}
+  .option-btn.selected .option-icon{background:var(--forest);border-color:var(--forest);color:#fff}
+  .opt-desc{font-size:13px;color:var(--text-mid)}
+  .input-group{margin-bottom:1rem}
+  .input-label{font-size:13px;font-weight:500;color:var(--text-mid);margin-bottom:6px;display:block}
+  .mf-input{width:100%;padding:12px 16px;border:1.5px solid var(--sage-light);border-radius:10px;font-size:15px;font-family:'DM Sans',sans-serif;color:var(--text-dark);background:#fff;outline:none;transition:border-color 0.15s}
+  .mf-input:focus{border-color:var(--forest)}
+  .inline-inputs{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .nav-row{display:flex;gap:12px;align-items:center}
+  .btn-next{background:var(--forest);color:#fff;border:none;border-radius:10px;padding:13px 32px;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:500;cursor:pointer;transition:background 0.15s}
+  .btn-next:hover{background:var(--sage-dark)}
+  .btn-back{background:transparent;color:var(--text-mid);border:1.5px solid var(--sage-light);border-radius:10px;padding:13px 20px;font-family:'DM Sans',sans-serif;font-size:15px;cursor:pointer;transition:all 0.15s}
+  .btn-back:hover{border-color:var(--sage)}
+  .err{color:#c0392b;font-size:13px;margin-bottom:0.75rem}
+  .results-header{font-family:'Playfair Display',serif;font-size:32px;font-weight:900;color:var(--forest);margin-bottom:0.4rem}
+  .results-sub{font-size:14px;color:var(--text-mid);margin-bottom:2rem;line-height:1.6}
+  .metrics-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:1.5rem}
+  .metric-card{background:#fff;border:1.5px solid var(--sage-light);border-radius:12px;padding:1.2rem 1.4rem}
+  .metric-card.full{grid-column:1/-1}
+  .metric-label{font-size:11px;font-weight:500;color:var(--text-light);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:4px}
+  .metric-val{font-family:'Playfair Display',serif;font-size:28px;font-weight:700;color:var(--forest)}
+  .metric-unit{font-size:13px;font-weight:400;color:var(--text-mid);margin-left:3px}
+  .metric-note{font-size:12px;color:var(--text-mid);margin-top:4px}
+  .macros-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:1.5rem}
+  .breakdown-row{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--sage-light);font-size:14px;color:var(--text-dark)}
+  .breakdown-row:last-child{border-bottom:none;font-weight:500;color:var(--forest)}
+  .breakdown-label{color:var(--text-mid)}
+  .read-this{background:#EAF0EA;border:1.5px solid var(--sage-light);border-radius:12px;padding:1.1rem 1.3rem;margin-bottom:1.5rem}
+  .read-this-title{font-size:12px;font-weight:500;color:var(--forest);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:6px}
+  .read-this-body{font-size:13px;color:var(--text-mid);line-height:1.65}
+  .read-this-body a{color:var(--forest);font-weight:500;text-decoration:underline}
+  .resources-title{font-family:'Playfair Display',serif;font-size:18px;font-weight:700;color:var(--forest);margin:1.5rem 0 0.75rem}
+  .resource-cards{display:grid;gap:10px}
+  .res-card{background:#fff;border:1.5px solid var(--sage-light);border-radius:12px;padding:14px 16px;display:flex;align-items:center;gap:14px;cursor:pointer;text-decoration:none;transition:border-color 0.15s}
+  .res-card:hover{border-color:var(--forest)}
+  .res-icon{width:40px;height:40px;background:var(--sage-light);border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:20px;color:var(--forest)}
+  .res-text{flex:1}
+  .res-name{font-size:14px;font-weight:500;color:var(--text-dark)}
+  .res-desc{font-size:12px;color:var(--text-light);margin-top:2px}
+  .res-arrow{font-size:18px;color:var(--sage)}
+  .badge-goal{display:inline-block;background:#EAF0EA;border:1px solid var(--sage-light);border-radius:20px;padding:3px 12px;font-size:13px;color:var(--forest);font-weight:500;margin-bottom:1.5rem}
+  .section-title{font-family:'Playfair Display',serif;font-size:16px;font-weight:700;color:var(--forest);margin:0 0 0.75rem}
+</style>
+
+<div id="quiz-root">
+  <div class="mf-logo">
+    <span class="mf-logo-text">MAMIAN <span>Fitness</span></span>
+  </div>
+  <div class="progress-bar"><div class="progress-fill" id="progress" style="width:16.6%"></div></div>
+  <div id="quiz-body"></div>
+</div>
+
+<script>
+const state={step:1,gender:'',age:'',heightFt:'',heightIn:'',weight:'',activity:'',goal:''};
+const totalSteps=6;
+
+const activityLevels=[
+  {val:'1.2',label:'Sedentary',desc:'Little to no exercise'},
+  {val:'1.375',label:'Lightly active',desc:'Light exercise 1–3 days/week'},
+  {val:'1.55',label:'Moderately active',desc:'Moderate exercise 3–5 days/week'},
+  {val:'1.725',label:'Very active',desc:'Hard exercise 6–7 days/week'},
+  {val:'1.9',label:'Extremely active',desc:'Very hard exercise & physical job'},
+];
+
+const goals=[
+  {val:'maintenance',label:'Maintenance',desc:'Eat at TDEE — no gain, no loss',adj:0},
+  {val:'deficit',label:'Moderate deficit',desc:'Lose ~1 lb/week (-500 cal/day)',adj:-500},
+  {val:'bulk',label:'Lean bulk',desc:'Gain ~0.5 lb/week (+250 cal/day)',adj:250},
+];
+
+function calcBMR(){
+  const w=parseFloat(state.weight)*0.453592;
+  const hCm=(parseInt(state.heightFt||0)*12+parseInt(state.heightIn||0))*2.54;
+  const a=parseInt(state.age);
+  if(state.gender==='male') return 10*w+6.25*hCm-5*a+5;
+  return 10*w+6.25*hCm-5*a-161;
+}
+
+function getResults(){
+  const bmr=calcBMR();
+  const act=parseFloat(state.activity);
+  const tdee=bmr*act;
+  const goalObj=goals.find(g=>g.val===state.goal);
+  const target=Math.round(tdee+goalObj.adj);
+  const protein=Math.round(parseFloat(state.weight)*(state.goal==='bulk'?0.8:1.0));
+  const proteinCals=protein*4;
+  const remaining=target-proteinCals;
+  const fatCals=Math.round(target*0.30);
+  const carbCals=Math.round(target*0.40);
+  const fat=Math.round(fatCals/9);
+  const carbs=Math.round(carbCals/4);
+  const fiber=Math.round((target/1000)*14);
+  return{bmr:Math.round(bmr),tdee:Math.round(tdee),target,protein,fat,carbs,fiber,goalObj};
+}
+
+function setProgress(step){
+  document.getElementById('progress').style.width=((step/totalSteps)*100)+'%';
+}
+
+function render(){
+  const body=document.getElementById('quiz-body');
+  setProgress(state.step);
+  if(state.step===1) body.innerHTML=stepGender();
+  else if(state.step===2) body.innerHTML=stepAge();
+  else if(state.step===3) body.innerHTML=stepHeight();
+  else if(state.step===4) body.innerHTML=stepWeight();
+  else if(state.step===5) body.innerHTML=stepActivity();
+  else if(state.step===6) body.innerHTML=stepGoal();
+  else if(state.step===7) body.innerHTML=stepResults();
+  attachListeners();
+}
+
+function optBtn(field,val,label,desc,selected){
+  return `<button class="option-btn${selected?' selected':''}" data-val="${val}" data-field="${field}">
+    <span class="option-icon">${selected?'&#10003;':''}</span>
+    <span><strong style="color:var(--text-dark)">${label}</strong>${desc?`<br><span class="opt-desc">${desc}</span>`:''}</span>
+  </button>`;
+}
+
+function stepGender(){
+  return `<div class="step-label">Step 1 of ${totalSteps}</div>
+  <div class="question-title">What's your biological sex?</div>
+  <div class="question-sub">Used for the Mifflin St Jeor BMR equation.</div>
+  <div class="option-grid">
+    ${optBtn('gender','female','Female','',state.gender==='female')}
+    ${optBtn('gender','male','Male','',state.gender==='male')}
+  </div>
+  <div id="err" class="err"></div>
+  <div class="nav-row"><button class="btn-next" id="btn-next">Continue</button></div>`;
+}
+
+function stepAge(){
+  return `<div class="step-label">Step 2 of ${totalSteps}</div>
+  <div class="question-title">How old are you?</div>
+  <div class="question-sub">Age affects your metabolic rate calculation.</div>
+  <div class="input-group">
+    <label class="input-label">Age (years)</label>
+    <input class="mf-input" type="number" id="age-in" min="16" max="99" placeholder="e.g. 34" value="${state.age}">
+  </div>
+  <div id="err" class="err"></div>
+  <div class="nav-row">
+    <button class="btn-back" id="btn-back">Back</button>
+    <button class="btn-next" id="btn-next">Continue</button>
+  </div>`;
+}
+
+function stepHeight(){
+  return `<div class="step-label">Step 3 of ${totalSteps}</div>
+  <div class="question-title">What's your height?</div>
+  <div class="question-sub">Enter your height in feet and inches.</div>
+  <div class="inline-inputs">
+    <div class="input-group">
+      <label class="input-label">Feet</label>
+      <input class="mf-input" type="number" id="ft-in" min="3" max="8" placeholder="5" value="${state.heightFt}">
+    </div>
+    <div class="input-group">
+      <label class="input-label">Inches</label>
+      <input class="mf-input" type="number" id="in-in" min="0" max="11" placeholder="6" value="${state.heightIn}">
+    </div>
+  </div>
+  <div id="err" class="err"></div>
+  <div class="nav-row">
+    <button class="btn-back" id="btn-back">Back</button>
+    <button class="btn-next" id="btn-next">Continue</button>
+  </div>`;
+}
+
+function stepWeight(){
+  return `<div class="step-label">Step 4 of ${totalSteps}</div>
+  <div class="question-title">What's your current weight?</div>
+  <div class="question-sub">Enter your weight in pounds.</div>
+  <div class="input-group">
+    <label class="input-label">Weight (lbs)</label>
+    <input class="mf-input" type="number" id="weight-in" min="80" max="500" placeholder="e.g. 165" value="${state.weight}">
+  </div>
+  <div id="err" class="err"></div>
+  <div class="nav-row">
+    <button class="btn-back" id="btn-back">Back</button>
+    <button class="btn-next" id="btn-next">Continue</button>
+  </div>`;
+}
+
+function stepActivity(){
+  return `<div class="step-label">Step 5 of ${totalSteps}</div>
+  <div class="question-title">How active are you?</div>
+  <div class="question-sub">Be honest — this directly affects your calorie target.</div>
+  <div class="option-grid">
+    ${activityLevels.map(a=>optBtn('activity',a.val,a.label,a.desc,state.activity===a.val)).join('')}
+  </div>
+  <div id="err" class="err"></div>
+  <div class="nav-row">
+    <button class="btn-back" id="btn-back">Back</button>
+    <button class="btn-next" id="btn-next">Continue</button>
+  </div>`;
+}
+
+function stepGoal(){
+  return `<div class="step-label">Step 6 of ${totalSteps}</div>
+  <div class="question-title">What's your goal?</div>
+  <div class="question-sub">This adjusts your calorie target from your TDEE.</div>
+  <div class="option-grid">
+    ${goals.map(g=>optBtn('goal',g.val,g.label,g.desc,state.goal===g.val)).join('')}
+  </div>
+  <div id="err" class="err"></div>
+  <div class="nav-row">
+    <button class="btn-back" id="btn-back">Back</button>
+    <button class="btn-next" id="btn-next">See my results</button>
+  </div>`;
+}
+
+function stepResults(){
+  const {bmr,tdee,target,protein,fat,carbs,fiber,goalObj}=getResults();
+  const goalAdj=goalObj.adj;
+  const adjLabel=goalAdj===0?'':(goalAdj>0?'+'+goalAdj:goalAdj)+' cal';
+  return `
+  <div class="results-header">Your metabolic blueprint</div>
+  <div class="results-sub">Based on the Mifflin St Jeor equation for ${state.gender==='female'?'women':'men'}, age ${state.age}.</div>
+  <div class="badge-goal">${goalObj.label}</div>
+
+  <div class="metrics-grid">
+    <div class="metric-card full">
+      <div class="metric-label">Daily calorie target</div>
+      <div class="metric-val">${target.toLocaleString()}<span class="metric-unit">cal/day</span></div>
+      <div class="metric-note">Your number to hit every single day</div>
+    </div>
+  </div>
+
+  <div class="section-title">Your daily macros</div>
+  <div class="macros-grid">
+    <div class="metric-card">
+      <div class="metric-label">Protein</div>
+      <div class="metric-val">${protein}<span class="metric-unit">g</span></div>
+      <div class="metric-note">${protein*4} cal &middot; ${Math.round(protein*4/target*100)}% of total</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-label">Carbohydrates</div>
+      <div class="metric-val">${carbs}<span class="metric-unit">g</span></div>
+      <div class="metric-note">${carbs*4} cal &middot; 40% of total</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-label">Fat</div>
+      <div class="metric-val">${fat}<span class="metric-unit">g</span></div>
+      <div class="metric-note">${fat*9} cal &middot; 30% of total</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-label">Fiber</div>
+      <div class="metric-val">${fiber}<span class="metric-unit">g</span></div>
+      <div class="metric-note">14g per 1,000 calories</div>
+    </div>
+  </div>
+
+  <div class="metric-card" style="margin-bottom:1.5rem">
+    <div class="metric-label">How we got there</div>
+    <div class="breakdown-row"><span class="breakdown-label">BMR (at rest)</span><span>${bmr.toLocaleString()} cal</span></div>
+    <div class="breakdown-row"><span class="breakdown-label">Activity multiplier</span><span>&times; ${state.activity}</span></div>
+    <div class="breakdown-row"><span class="breakdown-label">TDEE</span><span>${tdee.toLocaleString()} cal</span></div>
+    ${goalAdj!==0?`<div class="breakdown-row"><span class="breakdown-label">Goal adjustment</span><span>${adjLabel}</span></div>`:''}
+    <div class="breakdown-row"><span class="breakdown-label">Your daily target</span><span>${target.toLocaleString()} cal</span></div>
+  </div>
+
+  <div class="read-this">
+    <div class="read-this-title">Read this</div>
+    <div class="read-this-body">These macros are calculated for you to hit your goals of fat loss, muscle building, etc. If you are not seeing weight loss from these numbers, there is a good sign your hormones or metabolic health could be holding you back. Feel free to check out my <a href="https://drive.google.com/file/d/1NUysfsy49_fCpr-D0oSxpmZ6oZ36CLHa/view?usp=drive_link" target="_blank">Metabolic Fat Loss Blueprint</a> for more details or ask me a question on <a href="https://www.instagram.com/mamianfitness" target="_blank">Instagram</a>.</div>
+  </div>
+
+  <div class="resources-title">Grab your free resources</div>
+  <div class="resource-cards">
+    <a class="res-card" href="https://drive.google.com/file/d/1NUysfsy49_fCpr-D0oSxpmZ6oZ36CLHa/view?usp=drive_link" target="_blank">
+      <div class="res-icon"><i class="ti ti-file-download" aria-hidden="true"></i></div>
+      <div class="res-text">
+        <div class="res-name">Metabolic Fat Loss Blueprint</div>
+        <div class="res-desc">Your complete guide to losing weight sustainably</div>
+      </div>
+      <i class="ti ti-arrow-right res-arrow" aria-hidden="true"></i>
+    </a>
+    <a class="res-card" href="https://www.flipsnack.com/87AFDD99E8C/camden-s-fast-food-cheat-sheets" target="_blank">
+      <div class="res-icon"><i class="ti ti-tool" aria-hidden="true"></i></div>
+      <div class="res-text">
+        <div class="res-name">Fast food cheat sheets</div>
+        <div class="res-desc">Eat out without blowing your numbers</div>
+      </div>
+      <i class="ti ti-arrow-right res-arrow" aria-hidden="true"></i>
+    </a>
+    <a class="res-card" href="https://mamianfitness.com/info-824-8908-1185" target="_blank">
+      <div class="res-icon"><i class="ti ti-calendar" aria-hidden="true"></i></div>
+      <div class="res-text">
+        <div class="res-name">Book a free strategy call</div>
+        <div class="res-desc">Let's build your custom plan together</div>
+      </div>
+      <i class="ti ti-arrow-right res-arrow" aria-hidden="true"></i>
+    </a>
+  </div>
+  <div style="margin-top:1.5rem">
+    <button class="btn-back" id="btn-restart" style="font-size:13px;padding:10px 18px">Start over</button>
+  </div>`;
+}
+
+function validate(){
+  const s=state.step;
+  if(s===1&&!state.gender) return 'Please select a biological sex.';
+  if(s===2){const a=parseInt(document.getElementById('age-in').value);if(!a||a<16||a>99) return 'Please enter a valid age (16–99).';}
+  if(s===3){
+    const ft=parseInt(document.getElementById('ft-in').value);
+    const inc=parseInt(document.getElementById('in-in').value);
+    if(!ft||ft<3||ft>8) return 'Please enter a valid height in feet (3–8).';
+    if(isNaN(inc)||inc<0||inc>11) return 'Please enter inches (0–11).';
+  }
+  if(s===4){const w=parseFloat(document.getElementById('weight-in').value);if(!w||w<80||w>500) return 'Please enter a valid weight in lbs (80–500).';}
+  if(s===5&&!state.activity) return 'Please select your activity level.';
+  if(s===6&&!state.goal) return 'Please select your goal.';
+  return null;
+}
+
+function attachListeners(){
+  document.querySelectorAll('[data-field]').forEach(btn=>{
+    btn.addEventListener('click',()=>{state[btn.dataset.field]=btn.dataset.val;render();});
+  });
+  const next=document.getElementById('btn-next');
+  if(next) next.addEventListener('click',()=>{
+    const e=validate();
+    if(e){document.getElementById('err').textContent=e;return;}
+    const s=state.step;
+    if(s===2) state.age=document.getElementById('age-in').value;
+    if(s===3){state.heightFt=document.getElementById('ft-in').value;state.heightIn=document.getElementById('in-in').value;}
+    if(s===4) state.weight=document.getElementById('weight-in').value;
+    state.step++;render();
+  });
+  const back=document.getElementById('btn-back');
+  if(back) back.addEventListener('click',()=>{state.step--;render();});
+  const restart=document.getElementById('btn-restart');
+  if(restart) restart.addEventListener('click',()=>{
+    Object.assign(state,{step:1,gender:'',age:'',heightFt:'',heightIn:'',weight:'',activity:'',goal:''});
+    render();
+  });
+  document.querySelectorAll('.mf-input').forEach(inp=>inp.addEventListener('keydown',e=>{if(e.key==='Enter')document.getElementById('btn-next')?.click();}));
+}
+
+render();
+</script>
